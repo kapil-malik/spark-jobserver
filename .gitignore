@@ -8,6 +8,14 @@ test-reports/
 .idea*
 .vagrant
 *.pyc
+.classpath
+.project
+.settings
+.pydevproject
+*~
+.cache-main
+.cache-tests
+.gitignore
 
 # ignore deployment configs
 config/*.conf
