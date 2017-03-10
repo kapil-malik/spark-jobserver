@@ -1,14 +1,17 @@
 package spark.jobserver
 
-import scala.util.{Failure, Success, Try}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.sql.Row
 
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.hive.test.TestHiveContext
+import spark.jobserver.CommonMessages.JobResult
 import spark.jobserver.context.{HiveContextFactory, HiveContextLike}
 import spark.jobserver.io.JobDAOActor
+
+import scala.concurrent.duration._
+import scala.util.{Failure, Success, Try}
 
 class TestHiveContextFactory extends HiveContextFactory {
   override protected def contextFactory(conf: SparkConf): C = {
@@ -27,9 +30,6 @@ object HiveJobSpec extends JobSpecConfig {
 }
 
 class HiveJobSpec extends ExtrasJobSpecBase(HiveJobSpec.getNewSystem) {
-  import scala.concurrent.duration._
-
-  import CommonMessages._
 
   val classPrefix = "spark.jobserver."
   private val hiveLoaderClass = classPrefix + "HiveLoaderJob"
