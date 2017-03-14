@@ -126,18 +126,13 @@ lazy val dockerSettings = Seq(
 
     val sparkBuild = s"spark-$sparkVersion"
     val sparkBuildCmd = scalaBinaryVersion.value match {
-      case "2.10" =>
-        "./make-distribution.sh -Phadoop-2.4 -Phive"
       case "2.11" =>
-        """
-          |./dev/change-scala-version.sh 2.11 && \
-          |./make-distribution.sh -Dscala-2.11 -Phadoop-2.4 -Phive
-        """.stripMargin.trim
+        "./make-distribution.sh -Dscala-2.11 -Phadoop-2.7 -Phive"
       case other => throw new RuntimeException(s"Scala version $other is not supported!")
     }
 
     new sbtdocker.mutable.Dockerfile {
-      from(s"java:$javaVersion")
+      from(s"openjdk:$javaVersion")
       // Dockerfile best practices: https://docs.docker.com/articles/dockerfile_best-practices/
       expose(8090)
       expose(9999) // for JMX
@@ -181,7 +176,13 @@ lazy val dockerSettings = Seq(
   imageNames in docker := Seq(
     sbtdocker.ImageName(namespace = Some("velvia"),
                         repository = "spark-jobserver",
-                        tag = Some(s"${version.value}.mesos-${mesosVersion.split('-')(0)}.spark-$sparkVersion.scala-${scalaBinaryVersion.value}"))
+                        tag = Some(
+                          s"${version.value}" +
+                          s".mesos-${mesosVersion.split('-')(0)}" +
+                          s".spark-$sparkVersion" +
+                          s".scala-${scalaBinaryVersion.value}" +
+                          s".jdk-$javaVersion")
+                        )
   )
 )
 
